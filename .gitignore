@@ -1,0 +1,18 @@
+# Arquivos e diretórios gerados automaticamente
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv / Ambiente virtual
+venv/
+env/
+ 
+# Arquivos de logs e cache
+logs/
+*.log
+*.db
+
+# Arquivos de configuração sensíveis ou específicos do usuário
+*.env
+*.cfg
