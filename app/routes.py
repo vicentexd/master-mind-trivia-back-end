@@ -98,7 +98,7 @@ def create_game():
         "difficulty": difficulty,
         "language": language,
         "players": [{
-            "id": uuid.uuid4(),
+            "id": str(uuid.uuid4()),
             "username": username,
             "score": 0,
             "avatar_url": avatar_url,
@@ -183,7 +183,7 @@ def join_game():
           return jsonify({"message": "Username already used"}), 400
         
         new_player = {
-            "id": uuid.uuid4(),
+            "id": str(uuid.uuid4()),
             "username": username,
             "score": 0,
             "avatar_url": avatar_url,
@@ -229,6 +229,38 @@ def handle_start_game(data):
     print('start_game')
     game_code = data["game_code"]
     emit("game_started", to=game_code)
+
+# Evento Socket para responder uma pergunta
+@socketio.on('answer_question')
+def handle_answer_question(data):
+    print(data)
+    game_code = data["game_code"]
+    user_id = data["user_id"]
+    user_answer = data["user_answer"]
+    time = data["response_time"]
+    
+
+    get_game = games[game_code]
+
+    print(get_game)
+
+    current_question = get_game["current_question"]
+
+    update_user = next((user for user in get_game["players"] if user["id"] == user_id), None)
+    print(update_user)
+    if(current_question["correct_answer"] == user_answer):
+        print('Acertou a resposta 😁😀')
+        update_user["score"] += time + 1
+    else:
+        print('Errou!!!!')
+
+    emit_message = {
+        "user_id": user_id,
+    }
+    games[game_code] = get_game
+    emit("user_answer", emit_message, to=game_code)
+
+
 
 @socketio.on('teste')
 def teste(data):
